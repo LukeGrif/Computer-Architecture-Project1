@@ -55,7 +55,7 @@ void test_cordic() {
         int cos_accuracy = -log2(cos_err);
         int sin_accuracy = -log2(sin_err);
 
-        printf("%4d       | %10d  | %10d  | %8.5f  | %8.5f  | %3d bits, %3d bits\n",
+        printf("%4d        | %10d        | %10d        | %8.5f  | %8.5f  | %3d bits, %3d bits\n",
                angle, cos_val, sin_val, cos_fp, sin_fp, cos_accuracy, sin_accuracy);
     }
 }

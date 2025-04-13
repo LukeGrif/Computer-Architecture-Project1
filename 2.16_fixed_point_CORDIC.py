@@ -94,33 +94,36 @@ def cordic_fixed(angle, n):
     # Convert the final fixed-point cosine and sine values back to float.
     return fixed_to_float(x), fixed_to_float(y)
 
-def find_angle_from_fixed(cos_val, sin_val):
-    """
-    Computes the angle (in degrees) from the cosine and sine values.
-    
-    Parameters:
-        cos_val (float): The cosine of the angle.
-        sin_val (float): The sine of the angle.
-    
-    Returns:
-        float: The computed angle in degrees.
-    """
-    return math.degrees(math.atan2(sin_val, cos_val))
-
 def main():
-    angle = 20  # target rotation angle in degrees
-    iterations = 16  # number of iterations (a typical choice for Q2.16)
-    
-    # Compute cosine and sine using the fixed-point CORDIC algorithm.
-    cos_val, sin_val = cordic_fixed(angle, iterations)
-    
-    print("Fixed-point CORDIC results (Q2.16):")
-    print("cos({}) = {}".format(angle, cos_val))
-    print("sin({}) = {}".format(angle, sin_val))
-    
-    # Compute the angle from the computed sine and cosine to check the result.
-    angle_rotated = find_angle_from_fixed(cos_val, sin_val)
-    print("Recovered angle = {}".format(angle_rotated))
+    N = 16
+
+    print(f"      Angle |               CORDIC |             math.cos |               error | bits of accuracy")
+    print( "------------|----------------------|----------------------|---------------------|-----------------")
+
+    for angle_deg in range(-90, 90, 10):
+        cos_stdlib, _ = math.cos(math.radians(angle_deg)), math.sin(math.radians(angle_deg))
+        cos_cordic, _ = cordic_fixed(angle_deg, N)
+
+        error_cos = abs(cos_stdlib - cos_cordic)
+
+        accuracy_cos_bits = FIXED_FRACTIONAL_BITS + 2 if error_cos == 0 else math.floor(-math.log2(error_cos))
+
+        print(f"        {angle_deg:> 3} | {cos_cordic: 2.17f} | {cos_stdlib: 2.17f} | {error_cos:>2.17f} | {accuracy_cos_bits:>2}")
+
+    print("\n")
+
+    print(f"      Angle |               CORDIC |             math.sin |               error | bits of accuracy")
+    print( "------------|----------------------|----------------------|---------------------|-----------------")
+
+    for angle_deg in range(-90, 90, 10):
+        _, sin_stdlib = math.sin(math.radians(angle_deg)), math.sin(math.radians(angle_deg))
+        _, sin_cordic = cordic_fixed(angle_deg, N)
+
+        error_sin = abs(sin_stdlib - sin_cordic)
+
+        accuracy_sin_bits = FIXED_FRACTIONAL_BITS + 2 if error_sin == 0 else math.floor(-math.log2(error_sin))
+
+        print(f"        {angle_deg:> 3} | {sin_cordic: 2.17f} | {sin_stdlib: 2.17f} | {error_sin:>2.17f} | {accuracy_sin_bits:>2}")
 
 if __name__ == '__main__':
     main()
