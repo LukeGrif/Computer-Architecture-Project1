@@ -97,10 +97,10 @@ def cordic_fixed(angle, n):
 def main():
     N = 16
 
-    print(f"      Angle |               CORDIC |             math.cos |               error | bits of accuracy")
+    print(f"      Angle |               CORDIC |             math.cos |               Error | Bits of Accuracy")
     print( "------------|----------------------|----------------------|---------------------|-----------------")
 
-    for angle_deg in range(-90, 90, 10):
+    for angle_deg in range(-90, 91, 10):
         cos_stdlib, _ = math.cos(math.radians(angle_deg)), math.sin(math.radians(angle_deg))
         cos_cordic, _ = cordic_fixed(angle_deg, N)
 
@@ -112,10 +112,10 @@ def main():
 
     print("\n")
 
-    print(f"      Angle |               CORDIC |             math.sin |               error | bits of accuracy")
+    print(f"      Angle |               CORDIC |             math.sin |               Error | Bits of Accuracy")
     print( "------------|----------------------|----------------------|---------------------|-----------------")
 
-    for angle_deg in range(-90, 90, 10):
+    for angle_deg in range(-90, 91, 10):
         _, sin_stdlib = math.sin(math.radians(angle_deg)), math.sin(math.radians(angle_deg))
         _, sin_cordic = cordic_fixed(angle_deg, N)
 
