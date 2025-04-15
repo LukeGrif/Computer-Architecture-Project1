@@ -1,3 +1,4 @@
+
 import math
 
 # Define fixed-point parameters for Q2.16 format
@@ -127,3 +128,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
