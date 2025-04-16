@@ -1,22 +1,25 @@
-// cordic_tb.v
+// cordic.v
 // Author: Luke Griffin 21334528, Taha Al-Salihi 21302227, Reema Ibrahim 2447644, Aaron Smith 21335168
 // Date: 15-04-2025
+//
+// This module implements a fixed-point CORDIC algorithm to calculate sine and cosine values
+
 
 module CORDIC(
-    output reg signed [1:-16] cosine,
-    output reg signed [1:-16] sine,
-    output reg done,
-    input signed [1:-16] target_angle,
-    input init,
-    input clk
+    output reg signed [1:-16] cosine,   // computed cosine in Q2.16 format
+    output reg signed [1:-16] sine,     // computed sine in Q2.16 format
+    output reg done,                    // high when computation is complete
+    input signed [1:-16] target_angle,  // desired rotation angle in Q2.16
+    input init,                         // signal to start computation
+    input clk                           // clock signal
 );
 
-    parameter integer N = 16;
+    parameter integer N = 16;  // Number of iterations, determines precision
 
-    // atan(2^-i) in radians, scaled to Q2.16
+    // Precomputed arctangent values scaled to Q2.16 format
     reg signed [1:-16] atan_table [0:N];
     initial begin
-        atan_table[0]  = 32'sd51472;  // atan(2^-0) ≈ 0.7854 rad
+        atan_table[0]  = 32'sd51472;  // atan(2^-0) ≈ 0.7854
         atan_table[1]  = 32'sd30385;  // atan(2^-1) ≈ 0.4636
         atan_table[2]  = 32'sd16055;
         atan_table[3]  = 32'sd8149;
@@ -35,21 +38,25 @@ module CORDIC(
         atan_table[16] = 32'sd1;
     end
 
-    reg signed [1:-16] x, y, z;
-    reg signed [1:-16] x_next, y_next, z_next;
-    reg [4:0] i;
-    reg busy;
+    // Internal working variables for each iteration
+    reg signed [1:-16] x, y, z;             // Current coordinates and angle
+    reg signed [1:-16] x_next, y_next, z_next; // Updated values for next step
+    reg [4:0] i;                            // Iteration counter (can count to 16)
+    reg busy;                               // Indicates active calculation
 
+    // Core CORDIC rotation algorithm
     always @(posedge clk) begin
         if (init) begin
-            x <= 32'sd39797; // 1/A(n) ≈ 0.60725 * 65536
+            // Initialization step
+            x <= 32'sd39797; // x starts as 1 / gain ≈ 0.60725 (scaled)
             y <= 0;
-            z <= target_angle;
+            z <= target_angle;  // Set target angle
             i <= 0;
             busy <= 1;
             done <= 0;
         end else if (busy) begin
             if (i <= N) begin
+                // Perform one iteration of CORDIC
                 if (z >= 0) begin
                     x_next = x - (y >>> i);
                     y_next = y + (x >>> i);
@@ -59,11 +66,14 @@ module CORDIC(
                     y_next = y - (x >>> i);
                     z_next = z + atan_table[i];
                 end
+
+                // Update registers for next iteration
                 x <= x_next;
                 y <= y_next;
                 z <= z_next;
                 i <= i + 1;
             end else begin
+                // Done with all iterations
                 cosine <= x;
                 sine <= y;
                 done <= 1;
@@ -73,4 +83,3 @@ module CORDIC(
     end
 
 endmodule
-

@@ -1,3 +1,14 @@
+"""
+cordic.py
+
+CORDIC Algorithm Implementation in Python (Q2.16 Fixed-Point Arithmetic)
+Author: Luke Griffin 21334528, Taha Al-Salihi 21302227, Reema Ibrahim 2447644, Aaron Smith 21335168
+Date: 15-04-2025
+
+This Python script implements a fixed-point version of the CORDIC (COordinate Rotation DIgital Computer) algorithm
+for calculating sine and cosine values of angles using iterative shift-and-add operations.
+
+"""
 
 import math
 
